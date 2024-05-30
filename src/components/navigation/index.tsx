@@ -6,7 +6,7 @@ import { Icon } from '@rneui/themed';
 import CustomDrawerContent from '../header/customDrawerContent';
 import Header from '../header/header';
 import { NavigationContainer } from '@react-navigation/native';
-import LoginScreen from '../loginScreen';
+import LoginScreen from '../pageLogin';
 
 
 const Drawer = createDrawerNavigator();

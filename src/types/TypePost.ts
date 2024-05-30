@@ -1,8 +1,8 @@
 export type Post ={
-    id?: String;
+    id?: string;
     isDeleted?:string;
-    title: String;
-    body: String;
+    title: string;
+    body: string;
     isActive?:string;
     image?:string;
     createdAt?:Date;

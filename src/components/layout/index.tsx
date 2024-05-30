@@ -2,8 +2,8 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
-import login from '../loginScreen'; // Adjust the import path as necessary
-import home from '../homeScreen'; // Adjust the import path as necessary
+import login from '../pageLogin'; // Adjust the import path as necessary
+import home from '../pageHome'; // Adjust the import path as necessary
 
 const Drawer = createDrawerNavigator();
 

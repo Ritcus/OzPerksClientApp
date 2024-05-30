@@ -4,12 +4,11 @@ import genericApiCall from './src/api/genericApiCall';
 import { User } from './src/types/TypeUser';
 import { Post } from './src/types/TypePost';
 import { createTheme, makeStyles } from '@rneui/themed';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
-import LoginScreen from './src/components/loginScreen';
+import LoginScreen from './src/components/pageLogin';
 import { createStackNavigator } from '@react-navigation/stack';
 import MainDrawerNavigator from './src/components/navigation';
-import { _retrieveDataFromAsyncStorage } from './src/components/functions';
+import { _retrieveDataFromAsyncStorage } from './src/functions';
 
 const theme = createTheme({
   lightColors: {

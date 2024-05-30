@@ -1,6 +1,6 @@
-import AdminPortal from "../components/adminPortal";
-import HomeScreen from "../components/homeScreen";
-import LoginScreen from "../components/loginScreen";
+import AdminPortal from "../components/pageAdminPortal";
+import HomeScreen from "../components/pageHome";
+import LoginScreen from "../components/pageLogin";
 
 interface MenuItem {
     name: string;

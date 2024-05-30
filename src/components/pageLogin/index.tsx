@@ -5,7 +5,7 @@ import { styles } from "./style";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import genericApiCall from "../../api/genericApiCall";
 import { User } from "../../types/TypeUser";
-import { _storeDataInAsyncStorage } from "../functions";
+import { _storeDataInAsyncStorage } from "../../functions";
 
 let Iusername: string;
 

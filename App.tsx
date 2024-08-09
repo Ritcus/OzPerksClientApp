@@ -1,14 +1,18 @@
-import React, { useEffect, useState, ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, StyleSheet, View, SafeAreaView, Text, Image } from 'react-native';
 import genericApiCall from './src/api/genericApiCall';
 import { User } from './src/types/TypeUser';
 import { Post } from './src/types/TypePost';
-import { createTheme, makeStyles } from '@rneui/themed';
+import { Icon, createTheme, makeStyles } from '@rneui/themed';
 import { NavigationContainer } from '@react-navigation/native';
-import LoginScreen from './src/components/pageLogin';
 import { createStackNavigator } from '@react-navigation/stack';
-import MainDrawerNavigator from './src/components/navigation';
 import { _retrieveDataFromAsyncStorage } from './src/functions';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import CustomDrawerContent from './src/components/header/customDrawerContent';
+import menuItems from './src/types/TypeDrawerItems';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Progress from 'react-native-progress';
 
 const theme = createTheme({
   lightColors: {
@@ -58,37 +62,33 @@ export default function App() {
   const [users, setUsers] = useState<User[]>([]); 
   const datas : User = {fullName: "Rikki G", phone:"004545445", email:"rikki@gmail.com"}
   const [ppost, setPpost] = useState<Post>(); 
-
+  const [userName, setUserName] = useState<string | null | undefined>(); 
+  let storedUser: string | null | undefined;
+  const [loading, setLoading] = useState(true);
   //Core Logic 
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isFirstLaunch, setIsFirstLaunch] = useState<boolean>();
+  const [isFirstLaunch, setIsFirstLaunch] = useState<boolean>(true);
 
   useEffect(() => {
-    //fetchUsers();
-    //addUsers();
-    //getAPost();
-    getSavedData();
-  }, []);
-
-
-  const getSavedData = async () => {
-    try {
-      const value = await _retrieveDataFromAsyncStorage('@UserName')
-      if(value === null){
-         setIsFirstLaunch(true);
-         console.log(isFirstLaunch)
+    const checkUser = async () => {
+      try {
+          storedUser = await AsyncStorage.getItem('@UserName').then(a => a?.toString());
+          setUserName(storedUser)
+          if (storedUser) {
+              setUserName(a => { return storedUser});
+              console.log("running")
+          }
+          setTimeout(() => {setLoading(false)}, 5000)
+          console.log(userName)
+      } catch (error) {
+        console.error(error);
+        setTimeout(() => {setLoading(false)}, 5000)
       }
-      else{
-        setIsFirstLaunch(false);
-      }
-      
-      console.log(value)
-      
-    } catch (error) {
-      setIsFirstLaunch(true);
-    }
-  }
+  };
+  checkUser();
+  }, [userName]);
+
 
 
   const getAPost = async () => {
@@ -137,28 +137,69 @@ export default function App() {
       console.log(e);
     }
   }
+
+  const {height, width} = Dimensions.get("window");
+
+  const Drawer = createDrawerNavigator();
+
   return (
-    <View style={styles.c}>
-      <NavigationContainer>
-      <Stack.Navigator initialRouteName={isFirstLaunch ? 'Login':'Main'} screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Main" component={MainDrawerNavigator} />
-      </Stack.Navigator>
-          </NavigationContainer>
-    </View>
+    <View style={{flex:1, display:'flex', justifyContent:'center'}}>
+      {loading ? <View >
+        <View style={styles.progress}>
+      <Image source={require('./assets/logo.png')} style= {styles.logo} />
+      </View>
+      <View style={styles.progress}>
+        <Progress.CircleSnail size={100} progress={1} thickness={6} />
+        </View>
+        </View> :
+      <SafeAreaView style={styles.page}>
+        <NavigationContainer>
+          <Drawer.Navigator initialRouteName={userName == null ? 'Login':'Home'}
+          drawerContent={(props) => <CustomDrawerContent {...props} /> }>
+            {
+          menuItems.map((drawer) =>
+          <Drawer.Screen 
+          key={drawer.shown ? drawer.name : null}
+             name={drawer.name}
+             options={{
+                 drawerIcon:({focused})=>
+                 <Icon 
+                 name={drawer.iconName}
+                 type={drawer.iconType}
+                 size={24}
+                 color={focused ? "#e91e63" : "black"} />,
+                 headerShown:!drawer.loginPage,
+                 headerStyle:{backgroundColor:"lightblue"},
+                 headerTintColor: Colors.DarkBlue,
+                 headerTitle: drawer.headerName,
+                 headerRight:() => <Text>Hi {userName}</Text> ,
+                 drawerItemStyle : (drawer.shown ? {display : 'flex'} : {display:'none'} )
+        }} component={drawer.component}/>
+          )}
+          </Drawer.Navigator>
+        </NavigationContainer>
+        </SafeAreaView>
+}
+</View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    
+  page:{
+    flex:1,
+    backgroundColor:"#DDD",
+    overflow:'scroll',
+    justifyContent:'center'
   },
-  c: {
-    height:'100%',
-    width:'auto'
+  progress:{
+    verticalAlign:'middle',
+    alignSelf:'center',
   },
-});
+  logo: {
+    width: 270,
+    height: 120,
+    marginTop:20,
+    resizeMode: 'cover',
+    margin:10
+  },
+})

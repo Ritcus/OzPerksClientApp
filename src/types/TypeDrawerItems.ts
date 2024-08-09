@@ -1,12 +1,15 @@
 import AdminPortal from "../components/pageAdminPortal";
 import HomeScreen from "../components/pageHome";
 import LoginScreen from "../components/pageLogin";
+import PostPage from "../components/pagePost";
 
-interface MenuItem {
+export interface MenuItem {
     name: string;
     iconType: string;
     iconName: string;
-    hidden: boolean;
+    shown: boolean;
+    loginPage:boolean;
+    headerName:string;
     component: React.ComponentType<any>;
 }
 
@@ -15,22 +18,37 @@ const menuItems: MenuItem[] = [
         name: 'Home',
         iconType: 'antdesign',
         iconName: 'home',
-        hidden:true,
-        component:HomeScreen
+        shown: true,
+        component: HomeScreen,
+        loginPage: false,
+        headerName: "Home"
     },
     {
         name: 'Admin',
         iconType: 'Feather',
         iconName: 'settings',
-        hidden:true,
-        component:AdminPortal
+        shown: true,
+        component: AdminPortal,
+        loginPage: false,
+        headerName: "Admin"
+    },
+    {
+        name: 'PostPage',
+        iconType: 'Feather',
+        iconName: 'settings',
+        shown: false,
+        component: PostPage,
+        loginPage: false,
+        headerName: "Loading..."
     },
     {
         name: 'Login',
-        iconType: 'Feather',
-        iconName: 'settings',
-        hidden:false,
-        component:LoginScreen
+        shown: false,
+        loginPage: true,
+        component: LoginScreen,
+        iconType: "",
+        iconName: "",
+        headerName: ""
     }
 ];
 

@@ -14,61 +14,14 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Progress from 'react-native-progress';
 
-const theme = createTheme({
-  lightColors: {
-    primary: 'lightyellow',
-  },
-  darkColors: {
-    primary: 'green',
-  },
-  components: {
-    Button: {
-      raised: true,
-    },
-  },
-});
-
-const Stack = createStackNavigator();
-
-const Background : React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const styles = useStyles();
-  return <View style={styles.container}>{children}</View>;
-};
-
-const useStyles = makeStyles((theme) => ({
-  container: {
-    backgroundColor: theme.colors.primary,
-  },
-}));
-
-const abc = () => {
-  const [users, setUsers] = useState<User[]>([]); 
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      const userList = await genericApiCall('users',"GET" );
-    }
-    catch(e){
-
-    }
-  }
-}
 
 export default function App() {
-  const [users, setUsers] = useState<User[]>([]); 
   const datas : User = {fullName: "Rikki G", phone:"004545445", email:"rikki@gmail.com"}
-  const [ppost, setPpost] = useState<Post>(); 
   const [userName, setUserName] = useState<string | null | undefined>(); 
   let storedUser: string | null | undefined;
   const [loading, setLoading] = useState(true);
-  //Core Logic 
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFirstLaunch, setIsFirstLaunch] = useState<boolean>(true);
+  //Core Logic 
 
   useEffect(() => {
     const checkUser = async () => {
@@ -111,7 +64,6 @@ export default function App() {
       pp.lastUpdatedAt = new Date(Date.now());
       const ac = await genericApiCall<Post>(`post/${pp.id}`, 'PUT', pp);
       console.log("update a post")
-      console.log(ac);
     }
     catch(e){
       console.log(e);

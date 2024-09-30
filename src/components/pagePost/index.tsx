@@ -1,95 +1,131 @@
-import { Button, Card, Icon } from '@rneui/themed';
-import React, { useEffect, useState } from 'react'
-import { StyleSheet,View, Text, ActivityIndicator,SafeAreaView } from 'react-native';
-import { Post } from '../../types/TypePost';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import genericApiCall from '../../api/genericApiCall';
+import { Button, Card } from "@rneui/themed";
+import React, { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+  SafeAreaView,
+} from "react-native";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Post } from "../../types/TypePost";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import genericApiCall from "../../api/genericApiCall";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { ScrollView } from 'react-native-gesture-handler';
-
+import { ScrollView } from "react-native-gesture-handler";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { useUserContext } from "../../userContext";
 
 type ParamList = {
-    Params: {id: string};
+  Params: Post;
+};
+
+export default function PostPage() {
+  const { isAdmin } = useUserContext();
+  const { params } = useRoute<RouteProp<ParamList, "Params">>();
+  const post: Post = params;
+  const [loading, setLoading] = useState(true);
+  const navi = useNavigation<NavigationProp<any>>();
+  useEffect(() => {
+    setLoading(false);
+    changeHeading();
+  }, [post]);
+
+  const changeHeading = () => {
+    navi.setOptions({
+      headerTitle: post?.title,
+    });
   };
-  
-
-export default function PostPage () {
-    //const {post} = route.params;
-    const {params} = useRoute<RouteProp<ParamList, 'Params'>>();
-    console.log(params)
-
-    const[post, setPost] = useState<Post>();
-    const [loading, setLoading] = useState(true);
-    const navi = useNavigation();
-    useEffect(() => {
-      //setLoading(true);
-      fetchUsers();
-  }, []);
-
-
-    const fetchUsers = async() => {
-      try {
-        const aPost = await genericApiCall<Post>(`post/${params}`, 'GET' );
-        setPost(aPost) 
-        navi.setOptions({
-          headerTitle: aPost?.title,
-        })
-      }
-      catch(e){
-        console.log(e);
-      }
-      setLoading(false)
-    }
 
   return (
-    <ScrollView style={styles.content}>
-      {loading ? (<ActivityIndicator size="large" color="#0000ff" />): (
-
-     <Card>
+    <ScrollView>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <Card>
+          <View
+            style={{
+              marginBottom: hp("2%"),
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Icon.Button
+              style={{ flex: 1, alignSelf: "flex-start" }}
+              onPress={() => navi.goBack()}
+              name="reply"
+              size={hp("3%")}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "900",
+                  fontSize: hp("2.5%"),
+                }}
+              >
+                Back
+              </Text>
+            </Icon.Button>
+            {isAdmin && (
+              <Icon.Button
+                style={{ backgroundColor: "#FF0000", alignSelf: "flex-end" }}
+                onPress={() => navi.navigate("Update Post", post)}
+                name="edit"
+                size={hp("3%")}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "900",
+                    fontSize: hp("2.5%"),
+                  }}
+                >
+                  Edit
+                </Text>
+              </Icon.Button>
+            )}
+          </View>
+          <Card.Divider />
+          <Card.Title style={{ fontSize: hp("4%") }}>{post.title}</Card.Title>
+          <Card.Divider />
+          <View style={{ alignSelf: "flex-end" }}>
+            <Text style={{ fontSize: hp("1.%"), marginBottom: hp("3%") }}>
+              {new Date(post.createdAt!)
+                .toLocaleString("en-GB", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+                .replace(",", "")}
+            </Text>
+          </View>
           <Card.Image
-            style={{ padding: 0 }}
+            style={{ marginBottom: hp("3%") }}
             source={{
-              uri:
-                'https://awildgeographer.files.wordpress.com/2015/02/john_muir_glacier.jpg',
+              uri: post.imageUri,
             }}
           />
-          <Text style={{ marginBottom: 10 }}>
-            {post?.body}
+          <Card.Divider />
+          <Text style={{ fontSize: hp("2%"), marginBottom: hp("3%") }}>
+            {post.body}
           </Text>
-          <Button
-            icon={
-              <Icon
-                name="code"
-                color="#ffffff"
-                iconStyle={{ marginRight: 10 }}
-              />
-            }
-            buttonStyle={{
-              borderRadius: 0,
-              marginLeft: 0,
-              marginRight: 0,
-              marginBottom: 0,
-            }}
-            title={ post?.title}
-          />
+          <Card.Divider />
         </Card>
-      )
-}
-  </ScrollView>
-  )
+      )}
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    height: "100%",
-    overflow:'scroll',
-    justifyContent: "center",
-    flexGrow:1
+    display: "flex",
+    flex: 1,
   },
-    content: {
-      flexGrow:1,
-      height:'100%',
-      width:'100%'
-    }
-  });
+});

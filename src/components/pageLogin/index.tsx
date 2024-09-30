@@ -6,8 +6,17 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import genericApiCall from "../../api/genericApiCall";
 import { User } from "../../types/TypeUser";
 import { _storeDataInAsyncStorage } from "../../functions";
+import { useUserContext } from "../../userContext";
 
 let Iusername: string;
+let IisAdmin: boolean;
+
+type UserData = {
+  username: string | null;
+  isAdmin: boolean;
+};
+
+//
 
 //Form validation logic
 const validateFullName = (name: string): string | null => {
@@ -33,22 +42,6 @@ const validatePhone = (phone: string): string | null => {
   return null;
 };
 
-//User api call
-
-const addUsers = async (data: User): Promise<boolean> => {
-  try {
-    const respone = await genericApiCall<User>("user", "POST", data);
-    if (respone != null) {
-      const user = respone.user as User;
-      Iusername = user.fullName;
-      return true;
-    }
-  } catch (e) {
-    console.log(e);
-  }
-  return false;
-};
-
 export default function LoginScreen({}) {
   const navigation = useNavigation<NavigationProp<any>>();
   const [fullName, setFullName] = useState("");
@@ -60,11 +53,34 @@ export default function LoginScreen({}) {
     phone: "",
   });
 
+  //User api call
+
+  const addUsers = async (data: User): Promise<boolean> => {
+    try {
+      const response = await genericApiCall<User>("user", "POST", data);
+      if (response != null) {
+        const user = response.user as User;
+        Iusername = user.fullName;
+        IisAdmin = false;
+        if (user.role == "Admin") IisAdmin = true;
+        console.log(IisAdmin);
+        const userData: UserData = { username: Iusername, isAdmin: IisAdmin };
+        _storeDataInAsyncStorage("userData", userData);
+        setUsername(Iusername);
+        return true;
+      }
+    } catch (e) {
+      console.log(e);
+      setUsername(Iusername);
+    }
+    return false;
+  };
+
+  const { setUsername, username } = useUserContext();
+
   const fullNameRef = useRef<any>(null);
   const emailRef = useRef<any>(null);
   const phoneRef = useRef<any>(null);
-
-  const [abds, setabds] = useState("");
 
   const handleValidation = async () => {
     const fullNameError = validateFullName(fullName);
@@ -94,9 +110,6 @@ export default function LoginScreen({}) {
         phone,
       };
       const success = await addUsers(user);
-      if (success) {
-        _storeDataInAsyncStorage("@UserName", user.fullName);
-      }
       Alert.alert("Thank You!", "Please go ahead", [
         {
           text: "OK",
@@ -204,7 +217,6 @@ export default function LoginScreen({}) {
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {

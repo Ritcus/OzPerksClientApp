@@ -1,11 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+type UserData = {
+  username: string | null;
+  isAdmin: boolean;
+};
+
 export const _storeDataInAsyncStorage = async (
   variableName: string,
-  variableValue: string
+  variableValue: UserData
 ): Promise<boolean> => {
   try {
-    await AsyncStorage.setItem(variableName, variableValue);
+    await AsyncStorage.setItem(variableName, JSON.stringify(variableValue));
     return true;
   } catch (error) {
     console.error("Error saving data", error);

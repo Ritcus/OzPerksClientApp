@@ -1,55 +1,99 @@
-import AdminPortal from "../components/pageAdminPortal";
+import BlogScreen from "../components/pageBlog";
 import HomeScreen from "../components/pageHome";
 import LoginScreen from "../components/pageLogin";
 import PostPage from "../components/pagePost";
+import { useUserContext } from "../userContext";
+import PostUpdate from "../components/pagePostAddUpdate";
+import BargainScreen from "../components/pageBargain";
+import NewcomerScreen from "../components/pageNewcomer";
+import CommercialScreen from "../components/pageCommercial";
 
-export interface MenuItem {
-    name: string;
-    iconType: string;
-    iconName: string;
-    shown: boolean;
-    loginPage:boolean;
-    headerName:string;
-    component: React.ComponentType<any>;
+interface MenuItem {
+  name: string;
+  iconType: string;
+  iconName: string;
+  shown: boolean;
+  headerName: string;
+  component: React.ComponentType<any>;
 }
 
-const menuItems: MenuItem[] = [
-    {
-        name: 'Home',
-        iconType: 'antdesign',
-        iconName: 'home',
-        shown: true,
-        component: HomeScreen,
-        loginPage: false,
-        headerName: "Home"
-    },
-    {
-        name: 'Admin',
-        iconType: 'Feather',
-        iconName: 'settings',
-        shown: true,
-        component: AdminPortal,
-        loginPage: false,
-        headerName: "Admin"
-    },
-    {
-        name: 'PostPage',
-        iconType: 'Feather',
-        iconName: 'settings',
-        shown: false,
-        component: PostPage,
-        loginPage: false,
-        headerName: "Loading..."
-    },
-    {
-        name: 'Login',
-        shown: false,
-        loginPage: true,
-        component: LoginScreen,
-        iconType: "",
-        iconName: "",
-        headerName: ""
-    }
-];
+export const getMenuItems = (): MenuItem[] => {
+  const { isAdmin } = useUserContext();
 
-export default menuItems;
+  const menuItems: MenuItem[] = [
+    {
+      name: "Home",
+      iconType: "antdesign",
+      iconName: "home",
+      shown: true,
+      component: HomeScreen,
+      headerName: "Home",
+    },
+    {
+      name: "Add Post",
+      iconType: "Feather",
+      iconName: "settings",
+      shown: isAdmin,
+      component: PostUpdate,
+      headerName: "Add Post",
+    },
+    {
+      name: "Update Post",
+      iconType: "",
+      iconName: "",
+      shown: false,
+      component: PostUpdate,
+      headerName: "Update",
+    },
+    {
+      name: "PostPage",
+      iconType: "Feather",
+      iconName: "settings",
+      shown: false,
+      component: PostPage,
+      headerName: "Loading...",
+    },
+    {
+      name: "Login",
+      shown: false,
+      component: LoginScreen,
+      iconType: "",
+      iconName: "",
+      headerName: "",
+    },
+    {
+      name: "Blog",
+      shown: true,
+      component: BlogScreen,
+      iconType: "Feather",
+      iconName: "settings",
+      headerName: "Blog",
+    },
+    {
+      name: "Bargain",
+      shown: true,
+      component: BargainScreen,
+      iconType: "Feather",
+      iconName: "settings",
+      headerName: "Bargain",
+    },
+    {
+      name: "New Commer Info",
+      shown: true,
+      component: NewcomerScreen,
+      iconType: "Feather",
+      iconName: "settings",
+      headerName: "New Commer Info",
+    },
+    {
+      name: "Commercial",
+      shown: true,
+      component: CommercialScreen,
+      iconType: "Feather",
+      iconName: "settings",
+      headerName: "Commercial",
+    },
+  ];
+
+  return menuItems;
+};
